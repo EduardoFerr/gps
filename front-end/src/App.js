@@ -1,11 +1,11 @@
 import React from 'react';
 import './App.css';
-import Logon from './pages/Logon'
+import Routes from './routes'
 
 function App() {
   return (
     <div>
-      <Logon title="GPSdf"/>
+      <Routes />
     </div>
   );
 }

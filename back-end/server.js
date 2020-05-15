@@ -11,6 +11,7 @@ const {hidePoweredBy, noSniff, xssFilter} = require('helmet')
 app.use(hidePoweredBy({ setTo: 'PHP 4.2.0' }))
 app.use(noSniff())
 app.use(xssFilter())
+
 app.use(cors())
 app.use(express.json())
 app.use('/api', routes)

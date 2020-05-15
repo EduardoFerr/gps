@@ -40,12 +40,14 @@ exports.adicionar = async (req, res) => {
     try {
         const novoUsuario = await usuario.save()
         res.status(201).json({
-            mensagem: 'Adicionado novo usuário',
+            mensagem: 'Usuário criado com sucesso!',
             data: novoUsuario
         })
     } catch (error) {
         res.status(400).json({
-            mensagem: error.message || error.statusText || "Alguma coisa aconteceu na busca usuário"
+            mensagem: "Alguma coisa aconteceu ao tentar adicionar o usuário",
+            alerta: error.message || error.statusText,
+            erro: error
         })
     }
 }
