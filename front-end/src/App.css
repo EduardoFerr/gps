@@ -25,13 +25,17 @@ button {
 }
 
 form input,
-select {
+form select {
     width: 100%;
     height: 60px;
-    color: #333333;
+    color: #6d6b88;
     border: 1px solid #dcdce6;
+    background: #ffffff;
     border-radius: 8px;
     padding: 0 24px;
+}
+form option:disabled{
+    background: #d9d9d9;
 }
 
 form textarea {
@@ -43,6 +47,9 @@ form textarea {
     border-radius: 8px;
     padding: 16px 24px;
     line-height: 24px;
+}
+form span {
+    color: #FF4444;
 }
 
 .button {

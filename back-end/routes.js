@@ -1,8 +1,14 @@
 const express = require('express')
 const router = express.Router()
+
+
 const lista = require('./app/controladores/lista')
 const usuario = require('./app/controladores/usuario')
 const gps = require('./app/controladores/gps')
+
+
+router.post('/registrar', usuario.registrar)
+router.post('/autenticar', usuario.autenticar)
 
 router.get('/usuario', usuario.listar)
 router.get('/usuario/:id_usuario', usuario.pegarUsuario, usuario.buscar)

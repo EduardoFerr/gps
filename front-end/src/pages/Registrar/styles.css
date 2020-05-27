@@ -22,17 +22,17 @@
     align-items: center;
 }
 
-.registrar-container .content section{
+.registrar-container .content section {
     width: 100%;
     max-width: 380px;
 }
 
-.registrar-container .content section h1{
+.registrar-container .content section h1 {
     margin: 64px 0 32px;
     font-size: 32px;
 }
 
-.registrar-container .content section p{
+.registrar-container .content section p {
     font-size: 18px;
     color: #737380;
     line-height: 32px;
@@ -43,7 +43,8 @@
     max-width: 450px;
 }
 
-.registrar-container .content form input {
+.registrar-container .content form input,
+.registrar-container .content form select {
     margin-top: 8px;
 }
 
@@ -51,6 +52,10 @@
     display: flex;
 }
 
-.registrar-container .content form .input-group input + input {
+.registrar-container .content form .input-group input+input {
     margin-left: 18px;
 }
+
+.italic {
+    font-style: italic;
+}   

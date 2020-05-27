@@ -1,4 +1,46 @@
 const usuarioModelo = require('../modelos/usuario')
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+
+
+exports.registrar = async (req, res, next) => {
+    usuarioModelo.create({
+        nome: req.body.nome,
+        email: req.body.email,
+        password: req.body.password
+    }, (err, result) => {
+        if (err) {
+            next()
+        } else {
+            res.json({
+                status: 'success',
+                message: 'Usuário adicionado com sucesso',
+                data: null
+            })
+        }
+    })
+}
+
+exports.autenticar = (req, res, next) => {
+    usuarioModelo.findOne({
+        email: req.body.email,
+    }, (err, usuarioInfo) => {
+        if (err) {
+            next(err)
+        } else {
+            if (bcrypt.compareSync(req.body.password, usuarioInfo.password)) {
+                const token = jwt.sign({ id: usuarioInfo._id }, req.app.get('secretKey'), { expiresIn: '1h' })
+                res.json({
+                    status: 'success',
+                    message: 'Usuário encontrado!',
+                    data: { usuario: usuarioInfo, token: token }
+                })
+            } else {
+                res.json({ status: "error", message: "Email/password invalido!", data: null })
+            }
+        }
+    })
+}
 
 exports.pegarUsuario = async (req, res, next) => {
     const usuario = await usuarioModelo.findById(req.params.id_usuario)

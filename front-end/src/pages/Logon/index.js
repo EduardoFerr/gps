@@ -17,7 +17,10 @@ function Logon() {
 
                     <input placeholder="Usuário" />
                     <input placeholder="Senha" type="password" />
-                    <button className="button" type="submit">Entrar</button>
+                    {/* <button className="button" type="submit">Entrar</button> */}
+                    <button color="primary" className='button'>
+                        Entrar
+                    </button>
                     <nav className="back-link">
                         <Link to="/recuperar">
                             <FiHelpCircle size={16} color="#e02041" />
