@@ -1,62 +1,100 @@
 const usuarioModelo = require('../modelos/usuario')
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
+
+function desestruturarPerfilUsuario({ nome, usuario, email, idade, nascimento, telefone, whatsapp, sexo, uf, gps }) {
+    return { nome, usuario, email, idade, nascimento, telefone, whatsapp, sexo, uf, gps }
+}
 
 
 exports.registrar = async (req, res, next) => {
-    usuarioModelo.create({
-        nome: req.body.nome,
-        email: req.body.email,
-        password: req.body.password
-    }, (err, result) => {
-        if (err) {
-            next()
+    const usuario = new usuarioModelo(req.body)
+    try {
+        const novoUsuario = await usuarioModelo.create(usuario)
+        res.json({
+            mensagem: `${novoUsuario.usuario} registrado com sucesso!`,
+            data: novoUsuario
+        })
+    } catch ({ errors }) {
+        return res.status(500).json({
+            status: "error",
+            message: "Ocorreu um problema ao tentar registrar o novo usuário. Tente novamente.",
+            data: errors
+        })
+    }
+}
+
+exports.autenticar = async (req, res, next) => {
+    const { usuario, password } = req.body
+    const usuarioAuth = await usuarioModelo.findOne({ usuario })
+
+    try {
+        if (!usuarioAuth) {
+            res.status(400).json({ error: "Usuário ou Senha não conferem." });
+        }
+        if (!(usuarioAuth.compareHash(password))) {
+            res.status(400).json({ error: "Usuário ou Senha inválido(s)." })
         } else {
             res.json({
-                status: 'success',
-                message: 'Usuário adicionado com sucesso',
-                data: null
+                usuario: desestruturarPerfilUsuario(usuarioAuth),
+                token: usuarioAuth.generateToken(req.app.get('chave'))
             })
         }
-    })
+    } catch (error) {
+        return res.status(500).json({
+            status: "error",
+            message: error.message || error.statusText || "Ocorreu um problema ao tentar validar o usuário. Tente novamente.",
+            data: null
+        })
+    }
+}
+//"Rota" para o perfil de usuário
+exports.usuario = async (req, res, next) => {
+    if (req.usuario !== req.query.u)
+        res.status(400).json('😡 Requisição ruim!')
+
+    const usuario = desestruturarPerfilUsuario(await usuarioModelo.findOne({ 'usuario': req.usuario }))
+
+    try {
+        if ((!usuario))
+            res.status(404).json({
+                mensagem: 'Perfil de usuário não encontrado'
+            })
+
+        res.json(usuario)
+    } catch (error) {
+        res.status(500).json({
+            mensagem: error.message || error.statusText || 'Erro ao buscar usuário'
+        })
+    } finally {
+        res.usuario = usuario
+        next()
+    }
+
 }
 
-exports.autenticar = (req, res, next) => {
-    usuarioModelo.findOne({
-        email: req.body.email,
-    }, (err, usuarioInfo) => {
-        if (err) {
-            next(err)
-        } else {
-            if (bcrypt.compareSync(req.body.password, usuarioInfo.password)) {
-                const token = jwt.sign({ id: usuarioInfo._id }, req.app.get('secretKey'), { expiresIn: '1h' })
-                res.json({
-                    status: 'success',
-                    message: 'Usuário encontrado!',
-                    data: { usuario: usuarioInfo, token: token }
-                })
-            } else {
-                res.json({ status: "error", message: "Email/password invalido!", data: null })
-            }
-        }
-    })
-}
 
 exports.pegarUsuario = async (req, res, next) => {
-    const usuario = await usuarioModelo.findById(req.params.id_usuario)
+    console.log('req.headers')
+    console.log(req.headers)
+    console.log('req.params')
+    console.log(req.params)
+
+    const usuario = await usuarioModelo.findOne({ usuario: req.params.usuario })
+    // usuario.getIdByToken(req.headers)
     try {
         if (usuario == null)
             return res.status(404).json({
-                mensagem: 'usuário não encontrado'
+                mensagem: 'Usuário não encontrado.'
             })
     } catch (error) {
         return res.status(500).json({
-            mensagem: error.message || error.statusText || 'Erro ao buscar usuário'
+            mensagem: error.message || error.statusText || 'Erro ao buscar usuário.'
         })
+    } finally {
+        res.usuario = desestruturarPerfilUsuario(usuario)
+        next()
     }
-    res.usuario = usuario
-    next()
 }
+
 
 
 exports.listar = async (req, res) => {
@@ -86,9 +124,12 @@ exports.adicionar = async (req, res) => {
             data: novoUsuario
         })
     } catch (error) {
+        if (error.name === 'ValidationError') {
+            error._message = 'Erro de validação de usuário.'
+        }
         res.status(400).json({
             mensagem: "Alguma coisa aconteceu ao tentar adicionar o usuário",
-            alerta: error.message || error.statusText,
+            alerta: error._message || error.message || error.statusText,
             erro: error
         })
     }

@@ -1,19 +1,18 @@
 const ListaModelo = require('../modelos/lista')
 
 exports.pegarLista = async (req, res, next) => {
-    console.log(req.body)
-    // try {
-    //     lista = await ListaModelo.findById(req.params.id)
-    //     if (lista == null)
-    //         return res.status(404).json({
-    //             mensagem: 'GPS não encontrado'
-    //         })
-    // } catch (error) {
-    //     return res.status(500).json({
-    //         mensagem: error.message || error.statusText || 'Erro ao buscar GPS'
-    //     })
-    // }
-    // res.lista = lista
+    try {
+        lista = await ListaModelo.findById(req.params.id)
+        if (lista == null)
+            return res.status(404).json({
+                mensagem: 'GPS não encontrado'
+            })
+    } catch (error) {
+        return res.status(500).json({
+            mensagem: error.message || error.statusText || 'Erro ao buscar GPS'
+        })
+    }
+    res.lista = lista
     next()
 }
 
@@ -26,10 +25,13 @@ exports.listar = async (req, res) => {
             data: lista
         })
     } catch (error) {
-        res.status(500).json({
-            mensagem: error.message || error.statusText || "Alguma coisa aconteceu enquanto listava Lista"
+        return res.status(500).json({
+            mensagem: error.message || error.statusText || 'Erro ao buscar GPS'
         })
+
     }
+
+
 }
 
 exports.buscar = async (req, res) => {
@@ -37,22 +39,22 @@ exports.buscar = async (req, res) => {
 }
 
 exports.adicionar = async (req, res) => {
-    console.log('res.usuario')
-    console.log(res.usuario)
-    console.log('res.gps')
-    console.log(res.gps)
-    // const lista = new ListaModelo(req.body)
-    // try {
-    //     const callback = await lista.save()
-    //     res.status(201).json({
-    //         mensagem: 'Gps adicionado a lista.',
-    //         data: callback
-    //     })
-    // } catch (error) {
-    //     res.status(400).json({
-    //         mensagem: error.message || error.statusText || "Alguma coisa aconteceu na busca Lista"
-    //     })
-    // }
+    console.log('res.body')
+    console.log({ 'id_gps': req.body.gps })
+
+    const lista = new ListaModelo({ 'id_gps': req.body.gps })
+    console.log(lista)
+    try {
+        const callback = await lista.save()
+        res.status(201).json({
+            mensagem: 'Gps adicionado a lista.',
+            data: callback
+        })
+    } catch (error) {
+        res.status(400).json({
+            mensagem: error.message || error.statusText || "Alguma coisa aconteceu na busca Lista"
+        })
+    }
 }
 
 exports.atualizar = async (req, res) => {

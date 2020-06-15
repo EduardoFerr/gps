@@ -35,6 +35,7 @@ exports.buscar = async (req, res) => {
 }
 
 exports.adicionar = async (req, res) => {
+    const authUser = req.headers.user
     const gps = new gpsModelo(req.body)
 
     try {
@@ -60,10 +61,11 @@ exports.atualizar = async (req, res) => {
 
     try {
         const usuario = await res.usuario.save()
-        res.status(204).end()
+        res.status(204) .end()
     } catch (error) {
-        res.status(400).json({
-            mensagem: error.message || error.statusText || "Alguma coisa aconteceu ao tentar atualizar gps"
+                
+                            res.status(400).json({
+            mensagem    : error.message || error.statusText || "Alguma coisa aconteceu ao tentar atualizar gps"
         })
     }
 }

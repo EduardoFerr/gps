@@ -15,6 +15,7 @@ import logoImg from '../../assets/logo.svg'
 function Registrar() {
 
     const [mensagem, setMensagem] = useState(false || '')
+    const [usuario, setUsuario] = useState('')
     const [nome, setNome] = useState('')
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
@@ -38,7 +39,7 @@ function Registrar() {
             setMensagem('')
         }
 
-    },[mensagem])
+    }, [mensagem])
 
     async function manipularCidades(uf) {
         await cep.get(`${uf}/subdistritos`).then(res => {
@@ -50,8 +51,10 @@ function Registrar() {
         e.preventDefault()
 
         const data = {
+            usuario,
             nome,
             email,
+            password,
             telefone,
             whatsapp,
             sexo,
@@ -66,7 +69,7 @@ function Registrar() {
             console.log(`${response.data.mensagem}`)
             setValidacao({})
             history.push('/')
-            
+
         } catch ({ response }) {
             console.log(`Erro no cadastro, tente novamente.`, response)
             // console.log(response.data.mensagem)
@@ -89,6 +92,13 @@ function Registrar() {
                     </Link>
                 </section>
                 <form id="myform" onSubmit={manipularRegistro} >
+                    <input
+                        placeholder="Usuário"
+                        value={usuario}
+                        onChange={e => setUsuario(e.target.value)}
+                    // required
+                    />
+                    <span>{validacao.usuario ? validacao.usuario.message : null}</span>
                     <input
                         placeholder="Nome"
                         value={nome}
